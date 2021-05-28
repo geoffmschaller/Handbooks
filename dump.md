@@ -1,283 +1,6 @@
-# QRG
+# FSMO
 
-## Table of Contents
-
-1. [QRG](#qrg)
-    1. [Table of Contents](#table-of-contents)
-    2. [Computers](#computers)
-        1. [Get-ADComputer](#get-adcomputer)
-        2. [New-ADComputer](#new-adcomputer)
-        3. [Remove-ADComputer](#remove-adcomputer)
-        4. [Set-ADComputer](#set-adcomputer)
-    3. [DNS](#dns)
-        1. [Record Types](#record-types)
-        2. [Add-DnsServerPrimaryZone](#add-dnsserverprimaryzone)
-        3. [Add-DnsServerResourceA](#add-dnsserverresourcea)
-        4. [Add-DnsServerZoneDelegation](#add-dnsserverzonedelegation)
-        5. [Get-DnsServerForwarder](#get-dnsserverforwarder)
-        6. [Get-DnsServerResourceRecord](#get-dnsserverresourcerecord)
-        7. [Remove-DnsServerResourceRecord](#remove-dnsserverresourcerecord)
-        8. [Set-DnsServerSecondaryZone](#set-dnsserversecondaryzone)
-    4. [FSMO](#fsmo)
-        1. [Schema Operations Master](#schema-operations-master)
-        2. [Domain-Naming Operations Master](#domain-naming-operations-master)
-        3. [Primary Domain Controller (PDC) Emulator Operations Master](#primary-domain-controller-pdc-emulator-operations-master)
-        4. [Relative ID (RID) Operations Master Role](#relative-id-rid-operations-master-role)
-        5. [Infastructure Operations Master](#infastructure-operations-master)
-        6. [Query to see the FSMO Roles](#query-to-see-the-fsmo-roles)
-        7. [Move-ADDirectoryServerOperationsMasterRole](#move-addirectoryserveroperationsmasterrole)
-    5. [GPO](#gpo)
-        1. [Get-GPUInheritance](#get-gpuinheritance)
-        2. [Get-GPO](#get-gpo)
-        3. [New-GPLink](#new-gplink)
-        4. [New-GPO](#new-gpo)
-        5. [Remove-GPLink](#remove-gplink)
-        6. [Remove-GPO](#remove-gpo)
-        7. [Set-GPInheritance](#set-gpinheritance)
-        8. [Set-GPLink](#set-gplink)
-    6. [Groups](#groups)
-        1. [Add-ADGroupMember](#add-adgroupmember)
-        2. [Get-ADGroup](#get-adgroup)
-        3. [New-ADGroup](#new-adgroup)
-        4. [Remove-ADGroup](#remove-adgroup)
-        5. [Remove-ADGroupMember](#remove-adgroupmember)
-        6. [Set-ADGroup](#set-adgroup)
-    7. [Group Policies](#group-policies)
-        1. [Local Group Policy](#local-group-policy)
-    8. [Object Management](#object-management)
-        1. [Disable-ADAccount](#disable-adaccount)
-        2. [Enable-ADAccount](#enable-adaccount)
-        3. [Move-ADObject](#move-adobject)
-        4. [Search-ADAccount](#search-adaccount)
-        5. [Set-ADAccountPassword](#set-adaccountpassword)
-        6. [Unlock-ADAccount](#unlock-adaccount)
-    9. [OU](#ou)
-        1. [Get-ADOrganizationalUnit](#get-adorganizationalunit)
-        2. [New-ADOrganizationUnit](#new-adorganizationunit)
-        3. [Remove-ADOrganizationalUnit](#remove-adorganizationalunit)
-        4. [Set-ADOrganizationalUnit](#set-adorganizationalunit)
-    10. [Powershell](#powershell)
-        1. [Commands](#commands)
-        2. [Config](#config)
-        3. [Errors](#errors)
-        4. [Flow Control](#flow-control)
-        5. [Powershell Functions](#powershell-functions)
-        6. [Modules](#modules)
-        7. [Operators](#operators)
-        8. [Parsing Files](#parsing-files)
-        9. [Remote Execution](#remote-execution)
-        10. [Types](#types)
-    11. [Service Accounts](#service-accounts)
-        1. [Add-ADComputerServiceAccount](#add-adcomputerserviceaccount)
-        2. [Install-ADServiceAccount](#install-adserviceaccount)
-        3. [New-ADServiceAccount](#new-adserviceaccount)
-        4. [Remove-ADServiceAccount](#remove-adserviceaccount)
-        5. [Test-ADServiceAccount](#test-adserviceaccount)
-    12. [Users](#users)
-        1. [Basic User Object](#basic-user-object)
-        2. [Get-ADUser](#get-aduser)
-        3. [New-ADUser](#new-aduser)
-        4. [Remove-ADUser](#remove-aduser)
-        5. [Set-ADUser](#set-aduser)
-    13. [Utils](#utils)
-        1. [gpresult](#gpresult)
-        2. [gpupdate](#gpupdate)
-
-## Computers
-
-### Get-ADComputer
-
-The Get-ADComputer cmdlet gets a computer or performs a search to retrieve multiple computers.
-
-The Identity parameter specifies the Active Directory computer to retrieve. You can identify a computer by its distinguished name, GUID, security identifier (SID) or Security Accounts Manager (SAM) account name. You can also set the parameter to a computer object variable, such as $<localComputerobject> or pass a computer object through the pipeline to the Identity parameter.
-
-To search for and retrieve more than one computer, use the Filter or LDAPFilter parameters. The Filter parameter uses the PowerShell Expression Language to write query strings for Active Directory. PowerShell Expression Language syntax provides rich type conversion support for value types received by the Filter parameter. For more information about the Filter parameter syntax, type Get-Help about_ActiveDirectory_Filter. If you have existing Lightweight Directory Access Protocol (LDAP) query strings, you can use the LDAPFilter parameter.
-
-This cmdlet retrieves a default set of computer object properties. To retrieve additional properties use the Properties parameter. For more information about the how to determine the properties for computer objects, see the Properties parameter description.
-
-#### Get a Single Computer properties
-
-> `Get-ADComputer -Identity AustonMatthews-Laptop`
-
-This command gets all of the properties of the user with the SAM account name austonMatthews.
-
-> `Get-ADComputer -Identity AustonMatthews-Laptop -Properties *`
-
-This command gets specified properties from the SAM account austonMatthews.
-
-> `Get-ADComputer -Identity AustonMatthews-Laptop -Properties Name,Description,SID`
-
-This command retrieves specified properties and returns them in a table.
-
-> `Get-ADComputer -Identity austonMatthews -Properties Name,Description,SID | Format-Table Name,Desc,ID`
-
-#### Get Multiple Users' properties
-
-Returns multiple Users based on Team property.
-
-> `Get-ADComputer -Filter {Team -like "Toron*"} -Properties Name,Description,SID | Format-Table Name,Desc,ID` 
-
----
-
-### New-ADComputer
-
-The New-ADComputer cmdlet creates a new Active Directory computer object. This cmdlet does not join a computer to a domain. You can set commonly used computer property values by using the cmdlet parameters. Property values that are not associated with cmdlet parameters can be modified by using the OtherAttributes parameter.
-
-You can use this cmdlet to provision a computer account before the computer is added to the domain. These pre-created computer objects can be used with offline domain join, unsecure domain join, and RODC domain join scenarios.
-
-The Path parameter specifies the container or organizational unit (OU) for the new computer. When you do not specify the Path parameter, the cmdlet creates a computer account in the default container for computer objects in the domain.
-
-> `New-ADComputer -Name "Auston-SRV2" -SamAccountName "Auston-SRV2" -Path "OU=ApplicationServers,OU=ComputerAccounts,OU=Managed,DC=USERS02,DC=COM"`
-
----
-
-### Remove-ADComputer
-
-The Remove-ADComputer cmdlet removes an Active Directory computer.
-
-The Identity parameter specifies the Active Directory computer to remove. You can identify a computer by its distinguished name, GUID, security identifier (SID), or Security Accounts Manager (SAM) account name. You can also set the Identity parameter to a computer object variable, such as $<localComputerobject>, or you can pass a computer object through the pipeline to the Identity parameter. For example, you can use the Get-ADComputer cmdlet to retrieve a computer object and then pass the object through the pipeline to the Remove-ADComputer cmdlet.
-
-> `Remove-ADComputer -Identity "AustonMatthews-Laptop"`
-
-#### Remove Computer Recursively
-
-This command removes a computer and all leaf objects that are located underneath it in the directory. Note that only a few computer objects create child objects, such as servers running the Clustering service. This example can be useful for removing those objects and any child objects owned by and associated with them.
-
-> `Get-ADComputer -Identity "AustonMatthews-SRV4" | Remove-ADObject -Recursive`
-
----
-
-### Set-ADComputer
-
-The Set-ADComputer cmdlet modifies the properties of an Active Directory computer object. You can modify commonly used property values by using the cmdlet parameters. Property values that are not associated with cmdlet parameters can be modified by using the Add, Replace, Clear, and Remove parameters.
-
-The Identity parameter specifies the Active Directory computer to modify. You can identify a computer by its distinguished name, GUID, security identifier (SID) or Security Accounts Manager (SAM) account name. You can also set the Identity parameter to an object variable such as $<localComputerobject>, or you can pass an object through the pipeline to the Identity parameter. For example, you can use the Get-ADComputer cmdlet to retrieve a computer object and then pass the object through the pipeline to Set-ADComputer.
-
-The Instance parameter provides a way to update a computer by applying the changes made to a copy of the computer object. When you set the Instance parameter to a copy of an Active Directory computer object that has been modified, the Set-ADComputer cmdlet makes the same changes to the original computer object. To get a copy of the object to modify, use the Get-ADComputer object. When you specify the Instance parameter you should not pass the Identity parameter. For more information about the Instance parameter, see the Instance parameter description.
-
-#### Set property
-
-> `Set-ADComputer -Identity "austonMatthews-Laptop" -Location "ScotiaBankArena-Lockerroom"`
-
-#### Batch Set properties
-
-This command gets all the computers in the directory that are located in the OU=Players,OU=UserAccounts,DC=LEAFS,DC=COM organizational unit. This will change the description property of all computers in that OU to "Player Laptop".
-
-> `Get-ADComputer * -SearchBase 'OU=Players,OU=UserAccounts,DC=LEAFS,DC=COM' | Set-ADComputer -Description "Player Laptop"`
-
-#### Search and Set properties
-
-> `Get-ADComputer -Filter {Name -like "austonMatthews*"} | Set-ADComputer -Description "Auston Matthew's Laptop"`
-
----
-
-## DNS
-
-### Record Types
-
-| Record | Desc |
-| --- | --- |
-| A | FQDN => IPv4 |
-| AAAA | FQDN => IPv6 |
-| NS | DNS Servers |
-| MX | Mail Exchange |
-| CNAME | Canonical Name. FQDN => Alias |
-| PTR | Pointer Record. IP => FQDN |
-| SRV | Server. In AD used to point the user to the local domain controller. |
-| SOA | Start of authority. Provides general information about the DNS zone. |
-
----
-
-### Add-DnsServerPrimaryZone
-
-The Add-DnsServerPrimaryZone cmdlet adds a specified primary zone on a Domain Name System (DNS) server.
-
-You can add an Active Directory-integrated forward lookup zone, an Active Directory-integrated reverse lookup zone, a file-backed forward lookup zone, or a file-backed reverse lookup zone.
-
-#### Create an AD integrated forward lookup (FQDN => IP) zone.
-
-> `Add-DnsServerPrimaryZone -Name "DNS-TWO.geoff.com" -ReplicationScope "Forest" -PassThru`
-
-#### Create a file backed forward lookup (FQDN => IP) zone.
-
-> `Add-DnsServerPrimaryZone -Name "DNS-TWO.geoff.com" -ZoneFile "DNS-TWO-BACKUP.geoff.com.dns"`
-
-#### Create an AD integrated reverse lookup (IP => FQDN) zone.
-
-> `Add-DnsServerPrimaryZone -NetworkID "10.1.0.0/24" -ReplicationScope "Forest"`
-
-#### Create a file backed reverse lookup (IP => FQDN) zone.
-
-> `Add-DnsServerPrimaryZone -NetworkID 10.3.0.0/24 -ZoneFile "DNS-BACKUP.evilcorp.com.dns"`
-
----
-
-### Add-DnsServerResourceA
-
-The Add-DnsServerResourceRecordA cmdlet adds a host address (A) record to a Domain Name System (DNS) zone. An A record specifies an IPv4 address.
-
-> `Add-DnsServerResourceRecordA -Name "blog" -ZoneName "geoff.com" -IPv4Address "192.168.0.12"`
-
----
-
-### Add-DnsServerZoneDelegation
-
-The Add-DnsServerZoneDelegation cmdlet adds a zone delegation to a Domain Name System (DNS) zone. For instance, you can add a child domain called west01 to your top level domain, contoso.com, and specify a DNS server for that delegated domain.
-
-> `Add-DnsServerZoneDelegation -Name "evilcorp.com" -ChildZoneName "blog" -NameServer "blog.evilcorp.com" -IPAddress 172.23.90.136 -PassThru -Verbose`
-
----
-
-### Get-DnsServerForwarder
-
-The Get-DnsServerForwarder cmdlet gets configuration settings on a DNS server. A forwarder is a Domain Name System (DNS) server on a network that is used to forward DNS queries for external DNS names to DNS servers outside that network.
-
-> `Get-DnsServerForwarder`
-
----
-
-### Get-DnsServerResourceRecord
-
-The Get-DnsServerResourceRecord cmdlet gets the following information for a specified resource record from a Domain Name System (DNS) zone:
-
-- HostName
-- RecordType
-- RecordClass
-- TimeToLive
-- Timestamp
-- RecordData
-
-> `Get-DnsServerResourceRecord -ZoneName "geoff.com" -RRType "A"`
-
-> `Get-DnsServerResourceRecord -ZoneName "geoff.com" -RRType "CNAME"`
-
-The `-ExpandedProperty RecordData` flag can be set for more detailed output.
-
-> `Get-DnsServerResourceRecord -ZoneName "geoff.com" -RRType "SRV" | Select-Object -ExpandedProperty RecordData`
-
----
-
-### Remove-DnsServerResourceRecord
-
-The Remove-DnsServerResourceRecord cmdlet removes resource record objects from a Domain Name System (DNS) zone.
-
-You can either use the Get-DnsServerResourceRecord cmdlet to specify an object, or you can specify the RRtype, Name and RecordData of the resource record you want to remove. If you specify an RRtype or name and there are multiple resource records, you can specify the RecordData to delete a specific record. If you do not specify RecordData, the cmdlet deletes all records that match RRtype and Name for the specified zone.
-
-> `Remove-DnsServerResourceRecord -ZoneName "geoff.com" -RRType "A" -Name "blog"`
-
----
-
-### Set-DnsServerSecondaryZone
-
-The Set-DnsServerSecondaryZone cmdlet changes settings for an existing secondary zone on a Domain Name System (DNS) server.
-
-> `Set-DnsServerSecondaryZone "DNS-SECONDARY.geoff.com" -MasterServers 172.23.90.124,2001:4898:7020:f100:458f:e6a2:fcaf:698c -PassThru`
-
----
-
-## FSMO
-
-### Schema Operations Master
+## Schema Operations Master
 
 Shows which domain controller holds the role of Schema Operations Master. The Schema Master is the only role that can update the AD Schema.
 
@@ -289,7 +12,7 @@ This requires a user account on the DC that is a member of the Schema Admin Grou
 
 ---
 
-### Domain-Naming Operations Master
+## Domain-Naming Operations Master
 
 Shows which domain controller holds the role of DomainNamingMaster. 
 
@@ -301,7 +24,7 @@ Limit one per forest.
 
 ---
 
-### Primary Domain Controller (PDC) Emulator Operations Master
+## Primary Domain Controller (PDC) Emulator Operations Master
 
 Role in charge of syncing time, password change replications, locking accounts because of failed login, and stores a copy of the Group Policy Object.
 
@@ -311,7 +34,7 @@ Limit one per domain.
 
 ---
 
-### Relative ID (RID) Operations Master Role
+## Relative ID (RID) Operations Master Role
 
 The RID value is used to process of SID (unique ID in a domain) creation. It's a pool of IDs. 
 
@@ -323,7 +46,7 @@ Limit one per domain.
 
 ---
 
-### Infastructure Operations Master
+## Infastructure Operations Master
 
 Replicates SID and Distinguished Name (DN) values changes to cross-domains, so that when a user moves domains, they have access to appropriate resources.
 
@@ -336,7 +59,7 @@ Limit one per domain.
 
 ---
 
-### Query to see the FSMO Roles
+## Query to see the FSMO Roles
 
 Displays which servers the roles reside on.
 
@@ -344,7 +67,7 @@ Displays which servers the roles reside on.
 
 ---
 
-### Move-ADDirectoryServerOperationsMasterRole
+## Move-ADDirectoryServerOperationsMasterRole
 
 The Move-ADDirectoryServerOperationMasterRole cmdlet moves one or more operation master roles to a directory server. You can move operation master roles to a directory server in a different domain if the credentials are the same in both domains.
 
@@ -376,19 +99,19 @@ Role seizure, which involves seizing roles you previously attempted to transfer 
 
 Unlike using Ntdsutil.exe to move operation master roles, the Move-ADDirectoryServerOperationMasterRole cmdlet can be remotely executed from any domain joined computer where the Active Directory module for Windows PowerShell administration module is installed and available for use. This can make the process of moving roles simpler and easier to centrally administer as each of the two command operations required can be run remotely and do not have to be locally executed at each of the corresponding role holders involved in the movement of the roles, for instance, role transfer only allowed at the old role holder, role seizure only allowed at the new role holder.
 
-#### Transfer roles to a specific domain controller
+### Transfer roles to a specific domain controller
 
 > `Move-ADDirectoryServerOperationMasterRole -Identity USER04-DC1 -OperationMasterRole SchemaMaster,DomainNamingMaster,PDCEmulator,RIDMaster,InfrastructureMaster`
 
-#### Seize roles using -Force
+### Seize roles using -Force
 
 > `Move-ADDirectoryServerOperationMasterRole -Identity USER04-DC1 -OperationMasterRole RIDMaster,InfrastructureMaster,DomainNamingMaster -Force`
 
 ---
 
-## GPO
+# GPO
 
-### Get-GPUInheritance
+## Get-GPUInheritance
 
 The Get-GPInheritance cmdlet gets information about Group Policy inheritance for a specified domain or organizational unit (OU).
 
@@ -408,7 +131,7 @@ The InheritedGpoLinks property contains a list of the GPOs are applied to the OU
 
 ---
 
-### Get-GPO
+## Get-GPO
 
 The Get-GPO cmdlet gets one Group Policy Object (GPO) or all the GPOs in a domain. You can specify a GPO by its display name or by its globally unique identifier (GUID) to get a single GPO, or you can get all the GPOs in the domain through the All parameter.
 
@@ -418,7 +141,7 @@ This cmdlet returns one or more objects that represent the requested GPOs. By de
 
 ---
 
-### New-GPLink
+## New-GPLink
 
 The New-GPLink cmdlet links a GPO to a site, domain, or organizational unit (OU). By default, the link is enabled, which means that the settings of the GPO are applied at the level of the target Active Directory container according to the rules of inheritance and precedence when Group Policy is processed.
 
@@ -426,13 +149,13 @@ You can specify the GPO by either its display name or its GUID; or the GPO can b
 
 > `New-GPLink -Name GPO_NAME -Target "ou=MyOU,dc=contoso,dc=com"`
 
-#### Create GPO and Link it
+### Create GPO and Link it
 
 > `New-GPO -Name "MyGPO" | New-GPLink -Target "ou=MyOU,dc=contoso,dc=com" -LinkEnabled Yes`
 
 ---
 
-### New-GPO
+## New-GPO
 
 The New-GPO cmdlet creates a GPO with a specified name. By default, the newly created GPO is not linked to a site, domain, or organizational unit (OU).
 
@@ -444,7 +167,7 @@ The cmdlet returns a GPO object, which represents the created GPO that you can p
 
 ---
 
-### Remove-GPLink
+## Remove-GPLink
 
 The Remove-GPLink cmdlet removes the link between a Group Policy Object (GPO) and a specified site, domain, or OU. This cmdlet does not delete the actual GPO or any other links between the specified GPO and other sites, domains, or OUs.
 
@@ -452,7 +175,7 @@ The Remove-GPLink cmdlet removes the link between a Group Policy Object (GPO) an
 
 ---
 
-### Remove-GPO
+## Remove-GPO
 
 The Remove-GPO cmdlet removes the Group Policy Object (GPO) container and data from the directory service and the system volume folder (SysVol).
 
@@ -460,7 +183,7 @@ The Remove-GPO cmdlet removes the Group Policy Object (GPO) container and data f
 
 ---
 
-### Set-GPInheritance
+## Set-GPInheritance
 
 The Set-GPInheritance cmdlet blocks or unblocks inheritance for a specified domain or organizational unit (OU).
 
@@ -468,18 +191,18 @@ GPOs are applied according to the Group Policy hierarchy in the following order:
 
 You use the Target parameter to specify the Lightweight Directory Access Protocol (LDAP) distinguished name of the domain or OU, and use the IsBlocked parameter to specify whether to block or unblock inheritance.
 
-#### Block inheritance in a domain
+### Block inheritance in a domain
 > `Set-GPInheritance -Target "ou=MyOU,dc=contoso,dc=com" -IsBlocked Yes `
 
-#### Unblock inheritance in a domain
+### Unblock inheritance in a domain
 > `Set-GPInheritance -Target "dc=northwest, dc=contoso, dc=com" -IsBlocked No`
 
-#### Unblock inheritance for a particular OU
+### Unblock inheritance for a particular OU
 > `Set-GPInheritance -Target "ou=MyOU,dc=contoso,dc=com" -IsBlocked No`
 
 ---
 
-### Set-GPLink
+## Set-GPLink
 
 The Set-GPLink cmdlet sets the properties of a Group Policy Object (GPO) link.
 
@@ -491,14 +214,14 @@ You can set the following properties:
 
 - Order. The order specifies the precedence that the settings of the GPO take over conflicting settings in other GPOs that are linked, and enabled, to the same site, domain, or OU.
 
-#### Enable the link between a GPO and OU
+### Enable the link between a GPO and OU
 > `Set-GPLink -Name TestGPO -Target "ou=MyOU,dc=contoso,dc=com" -LinkEnabled Yes`
 
 ---
 
-## Groups
+# Groups
 
-### Add-ADGroupMember
+## Add-ADGroupMember
 
 The Add-ADGroupMember cmdlet adds one or more users, groups, service accounts, or computers as new members of an Active Directory group.
 
@@ -510,7 +233,7 @@ The Members parameter specifies the new members to add to a group. You can ident
 
 ---
 
-### Get-ADGroup
+## Get-ADGroup
 
 The Get-ADGroup cmdlet gets a group or performs a search to retrieve multiple groups from an Active Directory.
 
@@ -520,25 +243,25 @@ To search for and retrieve more than one group, use the Filter or LDAPFilter par
 
 This cmdlet gets a default set of group object properties. To get additional properties use the Properties parameter. For more information about the how to determine the properties for group objects, see the Properties parameter description.
 
-#### Get single group
+### Get single group
 
 > `Get-ADGroup -Identity playersGroup`
 
 This command gets the group with the SAM account name Administrators.
 
-#### Filter for results
+### Filter for results
 
 > `Get-ADGroup -Filter 'GroupCategory -eq "Security" -and GroupScope -ne "DomainLocal"'`
 
 This command gets all groups that have a GroupCategory of Security but do not have a GroupScope of DomainLocal.
 
-#### View specific properties from a group
+### View specific properties from a group
 
 > `Get-ADGroup -Identity playersGroup -Properties DistinguishedName,Members | fl DN,Mems`
 
 ---
 
-### New-ADGroup
+## New-ADGroup
 
 The New-ADGroup cmdlet creates an Active Directory group object. Many object properties are defined by setting cmdlet parameters. Properties that cannot be set by cmdlet parameters can be set using the OtherAttributes parameter.
 
@@ -548,7 +271,7 @@ The Name and GroupScope parameters specify the name and scope of the group and a
 
 ---
 
-### Remove-ADGroup
+## Remove-ADGroup
 
 The Remove-ADGroup cmdlet removes an Active Directory group object. You can use this cmdlet to remove security and distribution groups.
 
@@ -560,7 +283,7 @@ If the ADGroup is being identified by its distinguished name, the Partition para
 
 ---
 
-### Remove-ADGroupMember
+## Remove-ADGroupMember
 
 The Remove-ADGroupMember cmdlet removes one or more users, groups, service accounts, or computers from an Active Directory group.
 
@@ -572,7 +295,7 @@ The Members parameter specifies the users, computers and groups to remove from t
 
 ---
 
-### Set-ADGroup
+## Set-ADGroup
 
 The Set-ADGroup cmdlet modifies the properties of an Active Directory group. You can modify commonly used property values by using the cmdlet parameters. Property values that are not associated with cmdlet parameters can be modified by using the Add, Replace, Clear, and Remove parameters.
 
@@ -584,17 +307,15 @@ The Instance parameter provides a way to update a group object by applying the c
 
 ---
 
-## Group Policies
+# Group Policies
 
-### Local Group Policy
+## Local Group Policy
 
 > `gpedit.msc`
 
----
+# Object Management
 
-## Object Management
-
-### Disable-ADAccount
+## Disable-ADAccount
 
 The Disable-ADAccount cmdlet disables an Active Directory user, computer, or service account.
 
@@ -604,7 +325,7 @@ The Identity parameter specifies the Active Directory user, computer service acc
 
 ---
 
-### Enable-ADAccount
+## Enable-ADAccount
 
 The Enable-ADAccount cmdlet enables an Active Directory user, computer, or service account.
 
@@ -614,7 +335,7 @@ The Identity parameter specifies the Active Directory user, computer, or service
 
 ---
 
-### Move-ADObject
+## Move-ADObject
 
 The Move-ADObject cmdlet moves an object or a container of objects from one container to another or from one domain to another.
 
@@ -628,17 +349,17 @@ The TargetPath parameter must be specified. This parameter identifies the new lo
 
 If you have ProtectedFromAccidentalDeletion enabled you cannot move objects. It must be disabled first.
 
-#### Move single User
+### Move single User
 
 > `Get-ADUser "austonMatthews" | Move-ADObject -TargetPath "OU=Users,OU=Toronto,DC=leafs,DC=com"`
 
-#### Move multiple objects at once
+### Move multiple objects at once
 
 > `Get-ADUser -Filter {Name -like "aust*"} -SearchBase "OU=users,OU=Washington,DC=leafs,DC=com" | Move-ADObject -TargetPath "OU=Users,OU=Toronto,DC=leafs,DC=com"`
 
 ---
 
-### Search-ADAccount
+## Search-ADAccount
 
 The Search-ADAccount cmdlet retrieves one or more user, computer, or service accounts that meet the criteria specified by the parameters. Search criteria include account and password status. For example, you can search for all accounts that have expired by specifying the AccountExpired parameter. Similarly, you can search for all accounts with an expired password by specifying the PasswordExpired parameter. You can limit the search to user accounts by specifying the UsersOnly parameter. Similarly, when you specify the ComputersOnly parameter, the cmdlet only retrieves computer accounts.
 
@@ -646,29 +367,29 @@ Some search parameters, such as AccountExpiring and AccountInactive use a defaul
 
 https://docs.microsoft.com/en-us/powershell/module/activedirectory/search-adaccount?view=windowsserver2019-ps#parameters
 
-#### Get all Disabled Accounts
+### Get all Disabled Accounts
 
 > `Search-ADAccount -AccountDisabled | FT Name, ObjectClass -A`
 
 Gets all disabled accounts and returns them in a table with the name and Object Class (user, computer, etc).
 
-#### Get only users with disabled accounts
+### Get only users with disabled accounts
 
 > `Search-ADAccount -AccountDisabled -UsersOnly | FT Name,ObjectClass -A`
 
 Gets all disabled users and returns them in a table with the name and Object Class (user, computer, etc).
 
-#### Get all accounts that have expired passwords
+### Get all accounts that have expired passwords
 
 > `Search-ADAccount -AccountExpired | FT Name,ObjectClass -A`
 
-#### Get all accounts that are locked out.
+### Get all accounts that are locked out.
 
 > `Search-ADAccount -LockedOut | FT Name,ObjectClass -A`
 
 ---
 
-### Set-ADAccountPassword
+## Set-ADAccountPassword
 
 The Set-ADAccountPassword cmdlet sets the password for a user, computer, or service account.
 
@@ -676,11 +397,11 @@ The Identity parameter specifies the Active Directory account to modify.
 
 You can identify an account by its distinguished name, GUID, security identifier (SID) or security accounts manager (SAM) account name. You can also set the Identity parameter to an object variable such as $<localADAccountObject>, or you can pass an object through the pipeline to the Identity parameter. For example, you can use the Search-ADAccount cmdlet to retrieve an account object and then pass the object through the pipeline to the Set-ADAccountPassword cmdlet. Similarly, you can use Get-ADUser, Get-ADComputer, or Get-ADServiceAccount, for standalone MSAs, cmdlets to retrieve account objects that you can pass through the pipeline to this cmdlet.
 
-#### Set/Reset Password
+### Set/Reset Password
 
 > `Set-ADAccountPassword -Identity austonMatthews -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "Eye1theR0kitRich@rd" -Force)`
 
-#### Set/Reset Password from CLI
+### Set/Reset Password from CLI
 
 This command prompts the user for a new password that is stored in a temporary variable named $NewPassword, then uses it to reset the password for the user account with the matching SamAccountName.
 
@@ -689,7 +410,7 @@ This command prompts the user for a new password that is stored in a temporary v
 
 ---
 
-### Unlock-ADAccount
+## Unlock-ADAccount
 
 The Unlock-ADAccount cmdlet restores Active Directory Domain Services (AD DS) access for an account that is locked. AD DS access is suspended or locked for an account when the number of incorrect password entries exceeds the maximum number allowed by the account password policy.
 
@@ -699,9 +420,9 @@ the Identity parameter specifies the Active Directory account to unlock. You can
 
 ---
 
-## OU
+# OU
 
-### Get-ADOrganizationalUnit
+## Get-ADOrganizationalUnit
 
 The Get-ADOrganizationalUnit cmdlet gets an organizational unit (OU) object or performs a search to get multiple OUs.
 
@@ -715,25 +436,25 @@ This cmdlet gets a default set of OU object properties. To get additional proper
 
 ---
 
-### New-ADOrganizationUnit
+## New-ADOrganizationUnit
 
 The New-ADOrganizationalUnit cmdlet creates an Active Directory organizational unit (OU). You can set commonly used OU property values by using the cmdlet parameters. Property values that are not associated with cmdlet parameters can be set by using the* OtherAttributes* parameter.
 
 You must set the Name parameter to create a new OU. If you do not specify the Path parameter, the cmdlet creates an OU under the default NC head for the domain.
 
-#### Create new OU
+### Create new OU
 
 > `New-ADOrganizationUnit -Name "Toronto" -Description "Toronto Branch"`
 
 When no "Path" is defined, then the OU is created in root.
 
-#### Create new OU with path
+### Create new OU with path
 
 > `New-ADOrganizationalUnit -Name "Toronto" -Path "DC=leafs,DC=COM"`
 
 ---
 
-### Remove-ADOrganizationalUnit
+## Remove-ADOrganizationalUnit
 
 The Remove-ADOrganizationalUnit cmdlet removes an Active Directory organizational unit (OU).
 
@@ -747,7 +468,7 @@ If the ProtectedFromAccidentalDeletion property of the organizational unit objec
 
 ---
 
-### Set-ADOrganizationalUnit
+## Set-ADOrganizationalUnit
 
 The Set-ADOrganizationalUnit cmdlet modifies the properties of an Active Directory organizational unit (OU). You can modify commonly used property values by using the cmdlet parameters. Property values that are not associated with cmdlet parameters can be modified by using the Add, Remove, Replace, and Clear parameters.
 
@@ -757,24 +478,24 @@ You can also set the Identity parameter to an object variable such as $<localADO
 
 > `Set-ADOrganizationalUnit -Identity "OU=UserAccounts,DC=leafs,DC=COM" -Description "This Organizational Unit holds all of the users accounts of leafs.COM"`
 
-#### Set Managed By Attribute
+### Set Managed By Attribute
 
 > `Set-ADOrganizationalUnit -Identity "OU=UserAccounts,DC=leafs,DC=COM" -ManagedBy "Toronto IT Team"`
 
 Make sure that the managed by value is set to an existing user or group. Otherwise the command will fail.
 
-#### Set Protected From Accidental Deletion Attribute
+### Set Protected From Accidental Deletion Attribute
 
 > `Set-ADOrganizationalUnit -Identity "OU=UserAccounts,DC=leafs,DC=COM" -ProtectedFromAccidentalDeletion $true`
 
 ---
 
 
-## Powershell
+# Powershell
 
-### Commands
+## Commands
 
-#### cd
+### cd
 
     Changes the current working directory.
 
@@ -786,7 +507,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### cls
+### cls
 
     Clears the PS console screen.
 
@@ -796,7 +517,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### dir
+### dir
 
     Displays the contents of the current working directory.
 
@@ -806,7 +527,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### Get-Command
+### Get-Command
 
     Displays the commands that PS is aware of.
 
@@ -820,7 +541,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### Get-Content
+### Get-Content
 
     Gets content from a resource.
 
@@ -830,7 +551,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### Get-Help
+### Get-Help
 
     Shows the documentation for a given command.
 
@@ -842,7 +563,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### Get-Member
+### Get-Member
 
     Returns a list of all methods and properties of an object.
 
@@ -852,7 +573,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### Get-Service
+### Get-Service
 
     Returns a list of all services running on the OS.
 
@@ -863,7 +584,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### Get-Variable
+### Get-Variable
 
     Returns a list of all variables, both user defined and built in.
 
@@ -875,7 +596,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### Resolve-DnsName
+### Resolve-DnsName
 
     Resolve DNS information for a given IP address.
 
@@ -885,7 +606,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### Test-Connection
+### Test-Connection
 
     Pings a host and returns information.
 
@@ -898,7 +619,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### Update-Help
+### Update-Help
 
     Compares local documentation for commands against an online repository and downloads new docs if needed.
 
@@ -910,9 +631,9 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-### Config
+## Config
 
-#### Set-ExecutionPolicy
+### Set-ExecutionPolicy
 
     Sets the execution policy for scripts.
 
@@ -922,7 +643,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### Set-StrictMode
+### Set-StrictMode
 
     Turns on many errors that are off by default.
 
@@ -932,9 +653,9 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-### Errors
+## Errors
 
-#### Try, Catch, Finally 
+### Try, Catch, Finally 
 
     Flow control and error handling. 
     Note that finally is optional. If it is set then it will run, even after an error was caught.
@@ -952,7 +673,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### $Error
+##3# $Error
 
     Stores a long history of errors. Newest errors are added to the front of the array.
 
@@ -963,15 +684,15 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-### Flow Control
+## Flow Control
 
-#### not
+### not
 
     -not (condition) 
 
 ---
 
-#### if elseif else
+### if elseif else
 
     if(statement) {
         # Something
@@ -983,7 +704,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### Switch
+### Switch
 
     switch (statement) {
         caseOne {
@@ -999,7 +720,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### foreach
+### foreach
 
     foreach($something in $array) {
         # Something
@@ -1009,7 +730,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### ForEach-Object
+### ForEach-Object
 
     $array | ForEach-Object - Process {
         # Something
@@ -1019,7 +740,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### for
+### for
 
     for($i = 0; $i -lt 10; $i++) {
         # Something
@@ -1027,7 +748,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### while
+### while
 
     while (condition) {
         # Something
@@ -1035,7 +756,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### do while
+### do while
 
     do {
         # Something
@@ -1043,7 +764,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-#### do until
+### do until
 
     do {
         # Something
@@ -1051,7 +772,7 @@ Make sure that the managed by value is set to an existing user or group. Otherwi
 
 ---
 
-### Powershell Functions
+## Powershell Functions
 
     function Write-Name {
 
@@ -1091,9 +812,9 @@ $Names | Write-Name -Age 33
 
 ---
 
-### Modules
+## Modules
 
-#### Module Save Locations
+### Module Save Locations
 
     System - C:\Windows\System32\WindowsPowershell\1.0\Modules
     All Users - C:\Program Files\WindowsPowershell\Modules
@@ -1101,14 +822,14 @@ $Names | Write-Name -Age 33
 
 ---
 
-#### Add a Module folder
+### Add a Module folder
 
     $CurrentPath = [Environment]::GetEnvironmentVariable("PSModulePath", "Machine")
     [Environment]::SetEnvironmentVariable("PSModulePath", $CurrentValue + ";C:\<DIRECTORY PATH>", "Machine")
 
 ---
 
-#### Get-Module
+### Get-Module
 
     Shows the documentation for a given command.
 
@@ -1119,7 +840,7 @@ $Names | Write-Name -Age 33
 
 ---
 
-#### Import-Module
+### Import-Module
 
     Imports a module manually, if auto-import fails.
 
@@ -1130,7 +851,7 @@ $Names | Write-Name -Age 33
 
 ---
 
-#### Remove-Module
+### Remove-Module
 
     Removes a module from the current session. It does not uninstall it.
 
@@ -1140,7 +861,7 @@ $Names | Write-Name -Age 33
 
 ---
 
-#### Find-Module
+### Find-Module
 
     Searches the Powershell Gallery for modules with the name or partial name.
 
@@ -1151,7 +872,7 @@ $Names | Write-Name -Age 33
 
 ---
 
-#### Install-Module
+### Install-Module
 
     Installs a module from the Powershell Gallery.
 
@@ -1161,7 +882,7 @@ $Names | Write-Name -Age 33
 
 ---
 
-#### Uninstall-Module
+### Uninstall-Module
 
     Uninstalls a module from the system.
 
@@ -1171,7 +892,7 @@ $Names | Write-Name -Age 33
 
 ---
 
-#### Create Custom Module
+### Create Custom Module
 
 1. Create a folder with the module name. The folder must be the same name as the module.
 2. Create custom .psm1 file.
@@ -1182,7 +903,7 @@ $Names | Write-Name -Age 33
 
 ---
 
-### Operators
+## Operators
 
 | Operator | JS |
 | --- | --- |
@@ -1196,29 +917,29 @@ $Names | Write-Name -Age 33
 
 ---
 
-### Parsing Files
+## Parsing Files
 
-#### CSV
+### CSV
 
-##### Reading CSV Files
+#### Reading CSV Files
 
 `Import-Csv -Path <FILE PATH>`
 
 ---
 
-##### Querying CSV Files
+#### Querying CSV Files
 
 `Import Csv  -Path <FILE PATH> | Where-Object {$_.'<HEADER KEY>' -eq '<VALUE>'}`
 
 ---
 
-##### Renaming Header
+#### Renaming Header
 
 `Import Csv -Path <FILE PATH> -Header '<KEY ONE>','<KEY TWO>','<KEY THREE>'`
 
 ---
 
-##### Creating CSV Files
+#### Creating CSV Files
 
     You can add the -NoTypeInformation to remove the line at the top of the CSV file saying what powershell type this file came from.
 
@@ -1229,23 +950,23 @@ $Names | Write-Name -Age 33
 ---
 
 
-#### Excel Sheets
+### Excel Sheets
 
     Requires the third party module ImportExcel to be installed from the gallery.
 
-##### Creating an Excel Sheet
+#### Creating an Excel Sheet
 
 `<OBJECT> | Export-Excel <FILE PATH>.xlsx`
 
 ---
 
-##### Creating a worksheet
+#### Creating a worksheet
 
 `<OBJECT> | Export-Excel <FILE PATH>.xlsx -WorksheetName '<WORKSHEET NAME>'`
 
 ---
 
-##### Querying Worksheet Available
+#### Querying Worksheet Available
 
     Returns a list of the worksheets. Use a for loop to iterate through them.
 
@@ -1253,7 +974,7 @@ $Names | Write-Name -Age 33
 
 ---
 
-##### Importing Excel Sheets
+#### Importing Excel Sheets
 
     By defualt only the first worksheet will be imported.
 
@@ -1261,7 +982,7 @@ $Names | Write-Name -Age 33
 
 ---
 
-##### Dynamic Fields
+#### Dynamic Fields
 
     Fields whos value is calculated on the fly, then added to the object/excel sheet.
 
@@ -1274,9 +995,9 @@ Example: Adds a timestamp column to each entry.
 
 ---
 
-#### JSON
+### JSON
 
-##### Reading JSON
+#### Reading JSON
 
     Raw returns a plain string from the JSON file.
 
@@ -1284,7 +1005,7 @@ Example: Adds a timestamp column to each entry.
 
 ---
 
-##### Creating JSON
+#### Creating JSON
 
     Use the -Compress flag to obfuscate the json output.
 
@@ -1292,7 +1013,7 @@ Example: Adds a timestamp column to each entry.
 
 ---
 
-##### JSON and Web Requests
+#### JSON and Web Requests
 
     Use the latter to ignore the request status code and just show the result.
 
@@ -1301,9 +1022,9 @@ Example: Adds a timestamp column to each entry.
 
 ---
 
-### Remote Execution
+## Remote Execution
 
-#### Invoke-Command
+### Invoke-Command
 
     Sends a command to a remote server. 
     
@@ -1325,7 +1046,7 @@ Example: Adds a timestamp column to each entry.
 
 ---
 
-#### New-PSSession
+### New-PSSession
 
     Creates a new session with a host.
 
@@ -1335,7 +1056,7 @@ Example: Adds a timestamp column to each entry.
 
 ---
 
-#### Get-PSSession
+### Get-PSSession
 
     Returns a list of past sessions. Can be saved as a variable.
 
@@ -1346,7 +1067,7 @@ Example: Adds a timestamp column to each entry.
 
 ---
 
-#### Disconnect-PSSession
+### Disconnect-PSSession
 
     Disconnects the session but allows you to connect back later. You pipe in the session from Get-Session.
 
@@ -1357,7 +1078,7 @@ Example: Adds a timestamp column to each entry.
 
 ---
 
-#### Connect-PSSession
+### Connect-PSSession
 
     Connects to previouslly disconnected hosts, that you have already connected to.
 
@@ -1367,7 +1088,7 @@ Example: Adds a timestamp column to each entry.
 
 ---
 
-#### Remove-PSSession
+### Remove-PSSession
 
     Removes a previouslly connected session. You will not be allowed to connect again without creating a new session.
 
@@ -1378,9 +1099,9 @@ Example: Adds a timestamp column to each entry.
 
 ---
 
-### Types
+## Types
 
-#### $null
+### $null
 
     The non-value assignment.
 
@@ -1390,7 +1111,7 @@ Example: Adds a timestamp column to each entry.
 
 ---
 
-#### $True and $False
+### $True and $False
 
     The true and false values.
 
@@ -1401,7 +1122,7 @@ Example: Adds a timestamp column to each entry.
 
 ---
 
-#### Arrays
+### Arrays
 
     Creates a fixed size array.
 
@@ -1418,7 +1139,7 @@ Example: Adds a timestamp column to each entry.
 
 ---
 
-#### Array Lists
+### Array Lists
 
     Creates a variable size array. Better for larger data sets. When adding or removing there is no need for overwrite.
 
@@ -1430,7 +1151,7 @@ Example: Adds a timestamp column to each entry.
 
 ---
 
-#### Hash Tables
+### Hash Tables
 
     Creates a hash table dictionary. Notice the '@'
 
@@ -1446,7 +1167,7 @@ Example: Adds a timestamp column to each entry.
 
 ---
 
-#### Custom Objects
+### Custom Objects
 
     Creates a custom object.
 
@@ -1457,9 +1178,9 @@ Example: Adds a timestamp column to each entry.
 ---
 
 
-## Service Accounts
+# Service Accounts
 
-### Add-ADComputerServiceAccount
+## Add-ADComputerServiceAccount
 
 The Add-ADComputerServiceAccount cmdlet adds one or more computer service accounts to an Active Directory computer.
 
@@ -1469,17 +1190,17 @@ The ServiceAccount parameter specifies the service accounts to add. You can iden
 
 Note: Adding a service account is a different operation than installing the service account locally.
 
-#### Add single account
+### Add single account
 
 > `Add-ADComputerServiceAccount -Computer ComputerAcct1 -ServiceAccount SvcAcct1`
 
-#### Add multiple accounts
+### Add multiple accounts
 
 > `Add-ADComputerServiceAccount -Computer ComputerAcct1 -ServiceAccount SvcAcct1,SvcAcct2`
 
 ---
 
-### Install-ADServiceAccount
+## Install-ADServiceAccount
 
 The Install-ADServiceAccount cmdlet installs an existing Active Directory managed service account on the computer on which the cmdlet is run. This cmdlet verifies that the computer is eligible to host the managed service account. The cmdlet also makes the required changes locally so that the managed service account password can be managed without requiring any user action.
 
@@ -1491,7 +1212,7 @@ The AccountPassword parameter allows you to pass a secure string that contains t
 
 ---
 
-### New-ADServiceAccount
+## New-ADServiceAccount
 
 The New-ADServiceAccount cmdlet creates a new Active Directory managed service account. By default, the cmdlet creates a group managed service account. To create a standalone managed service account which is linked to a specific computer, use the RestrictToSingleComputer parameter. To create a group managed service account which can only be used in client roles, use the RestrictToOutboundAuthenticationOnly parameter. This creates a group managed service account that can be used for outbound connections only and any attempts to connect to services using this account will fail because the account does not have enough information for authentication. You can set commonly used managed service account property values by using the cmdlet parameters. Property values that are not associated with cmdlet parameters can be set by using the OtherAttributes parameter.
 
@@ -1501,7 +1222,7 @@ The Path parameter specifies the container or organizational unit (OU) for the n
 
 ---
 
-### Remove-ADServiceAccount
+## Remove-ADServiceAccount
 
 The Remove-ADServiceAccount cmdlet removes an Active Directory managed service account. This cmdlet does not make changes to any computers that use the managed service account. After this operation, the managed service account no longer exists in the directory, but computers are configured to use the managed service account.
 
@@ -1513,7 +1234,7 @@ Note: Removing the service account is a different operation than uninstalling th
 
 ---
 
-### Test-ADServiceAccount
+## Test-ADServiceAccount
 
 The Test-ADServiceAccount cmdlet tests a managed service account (MSA) from a local computer.
 
@@ -1525,9 +1246,9 @@ This command tests the specified service account, MSA1, from the local computer.
 
 ---
 
-## Users
+# Users
 
-### Basic User Object
+## Basic User Object
 
 | Param | Desc |
 | --- | --- |
@@ -1542,7 +1263,7 @@ This command tests the specified service account, MSA1, from the local computer.
 
 ---
 
-### Get-ADUser
+## Get-ADUser
 
 The Get-ADUser cmdlet gets a specified user object or performs a search to get multiple user objects.
 
@@ -1552,7 +1273,7 @@ To search for and retrieve more than one user, use the Filter or LDAPFilter para
 
 This cmdlet retrieves a default set of user object properties. To retrieve additional properties use the Properties parameter. For more information about how to determine the properties for user objects, see the Properties parameter description.
 
-#### Get a Single Users properties
+### Get a Single Users properties
 
 > `Get-ADUser -Identity austonMatthews`
 
@@ -1568,7 +1289,7 @@ This command retrieves specified properties and returns them in a table.
 
 > `Get-ADUser -Identity austonMatthews -Properties Name,Position,Number | Format-Table Name,Pos,Num`
 
-#### Get Multiple Users' properties
+### Get Multiple Users' properties
 
 Returns multiple Users based on Team property.
 
@@ -1576,7 +1297,7 @@ Returns multiple Users based on Team property.
 
 ---
 
-### New-ADUser
+## New-ADUser
 
 The New-ADUser cmdlet creates an Active Directory user. You can set commonly used user property values by using the cmdlet parameters.
 
@@ -1593,11 +1314,11 @@ The Path parameter specifies the container or organizational unit (OU) for the n
 
 The following methods explain different ways to create an object by using this cmdlet.
 
-#### Create an enabled user with password input on the CLI
+### Create an enabled user with password input on the CLI
 
 > `New-ADUser -Name "Auston Matthews" -GivenName "Auston" -Surname "Matthews" -SamAccountName "austonMatthews" -UserPrincipalName "auston@leafs.com" -Path "OU=Users,OU=CAN,DC=leafs,DC=com" -AccountPassword(Read-Host -AsSecureString "Type Password for User") -Enabled $true`
 
-#### Create Multiple Users from CSV file
+### Create Multiple Users from CSV file
 
 > `Import-Csv "<FILE PATH>.csv" | ForEach-Object {`
 > 
@@ -1607,7 +1328,7 @@ The following methods explain different ways to create an object by using this c
 > 
 > `}`
 
-#### Create a disabled user with minimal details
+### Create a disabled user with minimal details
 
 This account cannot be enabled until a password is set.
 
@@ -1615,7 +1336,7 @@ This account cannot be enabled until a password is set.
 
 ---
 
-### Remove-ADUser
+## Remove-ADUser
 
 The Remove-ADUser cmdlet removes an Active Directory user.
 
@@ -1623,13 +1344,13 @@ The Identity parameter specifies the Active Directory user to remove. You can id
 
 > `Remove-ADUser -Identity AustonMatthews`
 
-#### Search and Remove
+### Search and Remove
 
 > `Get-ADUser -Filter {Name -like "Austo*"} | Remove-ADUser`
 
 ---
 
-### Set-ADUser
+## Set-ADUser
 
 The Set-ADUser cmdlet modifies the properties of an Active Directory user. You can modify commonly used property values by using the cmdlet parameters. You can set property values that are not associated with cmdlet parameters by using the Add, Remove, Replace, and Clear parameters.
 
@@ -1637,25 +1358,25 @@ The Identity parameter specifies the Active Directory user to modify. You can id
 
 The Instance parameter provides a way to update a user object by applying the changes made to a copy of the object. When you set the Instance parameter to a copy of an Active Directory user object that has been modified, the Set-ADUser cmdlet makes the same changes to the original user object. To get a copy of the object to modify, use the Get-ADUser object. The Identity parameter is not allowed when you use the Instance parameter. For more information about the Instance parameter, see the Instance parameter description.
 
-#### Set properties
+### Set properties
 > `Set-ADUser -Identity austonMatthews -HomePage 'http://www.goleafsgo.com' -LogonWorkstations 'AustonMatthews-LPTOP'`
 
-#### Set, Replace, and Clear properties
+### Set, Replace, and Clear properties
 > `Set-ADUser -Identity austonMatthews -Remove @{otherMailbox="auston.matthews"} -Add @{url="goleafsgo.com"} -Replace @{title="center"} -Clear description`
 
-#### Set properties using AD information
+### Set properties using AD information
 
 > `$Manager = Get-ADUser -Identity KyleDubas -Server Corp-DC01 `
 > 
 > `Set-ADUser -Identity austonMatthews -Manager $Manager -Server Scotia-Bank-Arena-DC02`
 
-#### Batch Set properties
+### Batch Set properties
 
 This command gets all the users in the directory that are located in the OU=Players,OU=UserAccounts,DC=LEAFS,DC=COM organizational unit. This will change the city property of all users in that OU to Toronto.
 
 > `Get-ADUser * -SearchBase 'OU=Players,OU=UserAccounts,DC=LEAFS,DC=COM' | Set-ADUser -City "Toronto"`
 
-#### Filter for Users and then set properties
+### Filter for Users and then set properties
 
 Filters for all users in that OU with a name begining with "Aust".
 
@@ -1663,20 +1384,20 @@ Filters for all users in that OU with a name begining with "Aust".
 
 ---
 
-## Utils
+# Utils
 
-### gpresult
+## gpresult
 
 Displays the Resultant Set of Policy (RSoP) information for a remote user and computer. To use RSoP reporting for remotely targeted computers through the firewall, you must have firewall rules that enable inbound network traffic on the ports.
 
 > `gpresult /r`
 
-#### For a remote user
+### For a remote user
 > `gpresult /s COMPUTERNAME /r`
 
 ---
 
-### gpupdate
+## gpupdate
 
 Updates Group Policy settings.
 
