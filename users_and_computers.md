@@ -2,54 +2,37 @@
 
 ## Table Of Contents
 
-1. [AD Users and Computers](#ad-users-and-computers)
-    1. [Table Of Contents](#table-of-contents)
-    2. [Users](#users)
-        1. [Basic User Object](#basic-user-object)
-        2. [Get-ADUser](#get-aduser)
-        3. [New-ADUser](#new-aduser)
-        4. [Remove-ADUser](#remove-aduser)
-        5. [Set-ADUser](#set-aduser)
-    3. [Computers](#computers)
-        1. [Get-ADComputer](#get-adcomputer)
-        2. [New-ADComputer](#new-adcomputer)
-        3. [Remove-ADComputer](#remove-adcomputer)
-        4. [Set-ADComputer](#set-adcomputer)
-    4. [Organizational Units](#organizational-units)
-        1. [Get-ADOrganizationalUnit](#get-adorganizationalunit)
-        2. [New-ADOrganizationUnit](#new-adorganizationunit)
-        3. [Remove-ADOrganizationalUnit](#remove-adorganizationalunit)
-        4. [Set-ADOrganizationalUnit](#set-adorganizationalunit)
-    5. [Account/Object Management](#accountobject-management)
-        1. [Disable-ADAccount](#disable-adaccount)
-        2. [Enable-ADAccount](#enable-adaccount)
-        3. [Move-ADObject](#move-adobject)
-        4. [Search-ADAccount](#search-adaccount)
-        5. [Set-ADAccountPassword](#set-adaccountpassword)
-        6. [Unlock-ADAccount](#unlock-adaccount)
-    6. [Service Accounts](#service-accounts)
-        1. [Add-ADComputerServiceAccount](#add-adcomputerserviceaccount)
-        2. [Install-ADServiceAccount](#install-adserviceaccount)
-        3. [New-ADServiceAccount](#new-adserviceaccount)
-        4. [Remove-ADServiceAccount](#remove-adserviceaccount)
-        5. [Test-ADServiceAccount](#test-adserviceaccount)
+- [AD Users and Computers](#ad-users-and-computers)
+  - [Table Of Contents](#table-of-contents)
+  - [Users](#users)
+    - [Get-ADUser](#get-aduser)
+    - [New-ADUser](#new-aduser)
+    - [Remove-ADUser](#remove-aduser)
+    - [Set-ADUser](#set-aduser)
+  - [Computers](#computers)
+    - [Get-ADComputer](#get-adcomputer)
+    - [New-ADComputer](#new-adcomputer)
+    - [Remove-ADComputer](#remove-adcomputer)
+      - [Remove Computer Recursively](#remove-computer-recursively)
+    - [Set-ADComputer](#set-adcomputer)
+  - [Organizational Units](#organizational-units)
+    - [Get-ADOrganizationalUnit](#get-adorganizationalunit)
+    - [New-ADOrganizationUnit](#new-adorganizationunit)
+    - [Set-ADOrganizationalUnit](#set-adorganizationalunit)
+  - [Account/Object Management](#accountobject-management)
+    - [Disable-ADAccount](#disable-adaccount)
+    - [Enable-ADAccount](#enable-adaccount)
+    - [Move-ADObject](#move-adobject)
+    - [Search-ADAccount](#search-adaccount)
+    - [Set-ADAccountPassword](#set-adaccountpassword)
+    - [Unlock-ADAccount](#unlock-adaccount)
+  - [Service Accounts](#service-accounts)
+    - [Add-ADComputerServiceAccount](#add-adcomputerserviceaccount)
+    - [Install-ADServiceAccount](#install-adserviceaccount)
+    - [New-ADServiceAccount](#new-adserviceaccount)
+    - [Remove-ADServiceAccount](#remove-adserviceaccount)
 
 ## Users
-
-### Basic User Object
-
-| Param | Desc |
-| --- | --- |
-| Name | Full Name. |
-| GivenName | First Name. |
-| Surname | Last Name. |
-| SamAccountName | Username. |
-| UserPrincipalName | UPN. |
-| Path | Defines the OU path. |
-| Account Password | Password. Can be set as an input to immediately ask for a typed password. |
-| Enabled | Start the account as enabled? |
-
----
 
 ### Get-ADUser
 
@@ -61,36 +44,24 @@ To search for and retrieve more than one user, use the Filter or LDAPFilter para
 
 This cmdlet retrieves a default set of user object properties. To retrieve additional properties use the Properties parameter. For more information about how to determine the properties for user objects, see the Properties parameter description.
 
-#### Get a Single Users properties
+```powershell
+# Get User
+Get-ADUser -Identity [SamAccountName]
 
-> `Get-ADUser -Identity austonMatthews`
+# Get all properties of a user
+Get-ADUser -Identity [SamAccountName] -Properties *
 
-This command gets all of the properties of the user with the SAM account name austonMatthews.
+# Gets specific properties of a user
+Get-ADUser -Identity [SamAccountName] -Properties [Properties]
 
-> `Get-ADUser -Identity austonMatthews -Properties *`
-
-This command gets specified properties from the SAM account austonMatthews.
-
-> `Get-ADUser -Identity austonMatthews -Properties Name,Position,Number`
-
-This command retrieves specified properties and returns them in a table.
-
-> `Get-ADUser -Identity austonMatthews -Properties Name,Position,Number | Format-Table Name,Pos,Num`
-
-#### Get Multiple Users' properties
-
-Returns multiple Users based on Team property.
-
-> `Get-ADUser -Filter {Team -like "Toron*"} -Properties Name,Position,Number | Format-Table Name,Pos,Num` 
-
+# Get properties for multiple users
+Get-ADUser -Filter {Name -like [Part of name]*}
+```
 ---
 
 ### New-ADUser
 
 The New-ADUser cmdlet creates an Active Directory user. You can set commonly used user property values by using the cmdlet parameters.
-
-View the syntax:
-> `Get-Command NewADUser -Syntax`
 
 You can set property values that are not associated with cmdlet parameters by using the OtherAttributes parameter. When using this parameter, be sure to place single quotes around the attribute name.
 
@@ -102,25 +73,22 @@ The Path parameter specifies the container or organizational unit (OU) for the n
 
 The following methods explain different ways to create an object by using this cmdlet.
 
-#### Create an enabled user with password input on the CLI
+```powershell
+# Get full syntax
+Get-Command New-ADUser -Syntax
 
-> `New-ADUser -Name "Auston Matthews" -GivenName "Auston" -Surname "Matthews" -SamAccountName "austonMatthews" -UserPrincipalName "auston@leafs.com" -Path "OU=Users,OU=CAN,DC=leafs,DC=com" -AccountPassword(Read-Host -AsSecureString "Type Password for User") -Enabled $true`
+# Create an enabled user with password input on the CLI
+New-ADUser -Name [Name] -GivenName [First name] -Surname [Last name] -SamAccountName [Username] -UserPrincipalName [Principal name] -Path [Ou Path] -AccountPassword(Read-Host -AsSecureString "What is the new password?") -Enabled $true
 
-#### Create Multiple Users from CSV file
+# Create multiple users from a CSV file
+Import-Csv [File path].csv | ForEach-Object {
+    $upn = $_."SamAccountName" + [domain]
+    New-ADUser -Name $_."Name" -GivenName $_."GivenName" -Surname $_."Surname" -SamAccountName $_."SamAccountName" -UserPrincipalName $upn -Path $_"Path" -AccountPassword (ConvertTo-SecureString [Password] -AsPlainText -force) -Enabled $true
+}
 
-> `Import-Csv "<FILE PATH>.csv" | ForEach-Object {`
-> 
-> `$upn = $_."SamAccountName" + "@evilcorp.com"`
-> 
-> `New-ADUser -Name $_."Name" -GivenName $_."GivenName" -Surname $_."Surname" -SamAccountName $_."SamAccountName" -UserPrincipalName $upn -Path $_."Path" -AccountPassword (ConvertTo-SecureString "Pa$$w0rd" -AsPlainText -force) -Enabled $true`
-> 
-> `}`
-
-#### Create a disabled user with minimal details
-
-This account cannot be enabled until a password is set.
-
-> `New-ADUser -Name "Auston Matthews" -GivenName "Auston" -Surname "Matthews" -SamAccountName "austonMatthews" -UserPrincipalName "auston@leafs.com" -Path "OU=Users,OU=CAN,DC=leafs,DC=com"`
+# Creates a disabled user with minimal details
+New-ADUser -Name "Auston Matthews" -GivenName "Auston" -Surname "Matthews" -SamAccountName "austonMatthews" -UserPrincipalName "auston@leafs.com" -Path "OU=Users,OU=CAN,DC=leafs,DC=com"
+```
 
 ---
 
@@ -130,12 +98,13 @@ The Remove-ADUser cmdlet removes an Active Directory user.
 
 The Identity parameter specifies the Active Directory user to remove. You can identify a user by its distinguished name (DN), GUID, security identifier (SID), or Security Account Manager (SAM) account name. You can also set the Identity parameter to a user object variable, such as $<localUserObject>, or you can pass a user object through the pipeline to the Identity parameter. For example, you can use the Get-ADUser cmdlet to retrieve a user object and then pass the object through the pipeline to the Remove-ADUser cmdlet.
 
-> `Remove-ADUser -Identity AustonMatthews`
+```powershell
+# Removes a user
+Remove-ADUser -Identity [SamAccountName]
 
-#### Search and Remove
-
-> `Get-ADUser -Filter {Name -like "Austo*"} | Remove-ADUser`
-
+# Search and Remove
+Get-ADUser -Filter {Name -like "Austo"*} | Remove-ADUSer
+```
 ---
 
 ### Set-ADUser
@@ -146,29 +115,20 @@ The Identity parameter specifies the Active Directory user to modify. You can id
 
 The Instance parameter provides a way to update a user object by applying the changes made to a copy of the object. When you set the Instance parameter to a copy of an Active Directory user object that has been modified, the Set-ADUser cmdlet makes the same changes to the original user object. To get a copy of the object to modify, use the Get-ADUser object. The Identity parameter is not allowed when you use the Instance parameter. For more information about the Instance parameter, see the Instance parameter description.
 
-#### Set properties
-> `Set-ADUser -Identity austonMatthews -HomePage 'http://www.goleafsgo.com' -LogonWorkstations 'AustonMatthews-LPTOP'`
+```powershell
+# Set, Replace, and Clear properties
+Set-ADUser -Identity [SamAccountName] -Remove @{otherMailbox=[Value]} -Add @{url=[Value]} -Replace @{title=[Value]} -Clear description
 
-#### Set, Replace, and Clear properties
-> `Set-ADUser -Identity austonMatthews -Remove @{otherMailbox="auston.matthews"} -Add @{url="goleafsgo.com"} -Replace @{title="center"} -Clear description`
+# Set properties using other ID objects
+$Manager = Get-ADUser -Identity [SamAccountName]
+Set-ADUser -Identity [SamAccountName] -Manager $Manager
 
-#### Set properties using AD information
+# Batch Set properties
+Get-ADUser * -SearchBase 'OU=Players,OU=UserAccounts,DC=LEAFS,DC=COM' | Set-ADUser -City [Value]
 
-> `$Manager = Get-ADUser -Identity KyleDubas -Server Corp-DC01 `
-> 
-> `Set-ADUser -Identity austonMatthews -Manager $Manager -Server Scotia-Bank-Arena-DC02`
-
-#### Batch Set properties
-
-This command gets all the users in the directory that are located in the OU=Players,OU=UserAccounts,DC=LEAFS,DC=COM organizational unit. This will change the city property of all users in that OU to Toronto.
-
-> `Get-ADUser * -SearchBase 'OU=Players,OU=UserAccounts,DC=LEAFS,DC=COM' | Set-ADUser -City "Toronto"`
-
-#### Filter for Users and then set properties
-
-Filters for all users in that OU with a name begining with "Aust".
-
-> `Get-ADUser -Filter 'Name -like "Aust*"' -SearchBase 'OU=Players,OU=UserAccounts,DC=Leafs,DC=COM' | Set-ADUser -City "Toronto"`
+# Filter for users and set properties
+Get-ADUser -Filter {Name -like [Value]*} -SearchBase [OU Base] | Set-ADUser -City [Value]
+```
 
 ---
 
@@ -184,27 +144,20 @@ To search for and retrieve more than one computer, use the Filter or LDAPFilter 
 
 This cmdlet retrieves a default set of computer object properties. To retrieve additional properties use the Properties parameter. For more information about the how to determine the properties for computer objects, see the Properties parameter description.
 
-#### Get a Single Computer properties
+```powershell
+# Get Computer info
+Get-ADComputer -Identity [Hostname]
 
-> `Get-ADComputer -Identity AustonMatthews-Laptop`
+# Get properties
+Get-ADComputer -Identity [Hostname] -Properties *
+Get-ADComputer -Identity [Hostname] -Properties Name,Description,SID
 
-This command gets all of the properties of the user with the SAM account name austonMatthews.
+# Get properties and format into a table
+Get-ADComputer -Identity [Hostname] -Properties Name,Description,SID | Format-Table Name,Desc,ID
 
-> `Get-ADComputer -Identity AustonMatthews-Laptop -Properties *`
-
-This command gets specified properties from the SAM account austonMatthews.
-
-> `Get-ADComputer -Identity AustonMatthews-Laptop -Properties Name,Description,SID`
-
-This command retrieves specified properties and returns them in a table.
-
-> `Get-ADComputer -Identity austonMatthews -Properties Name,Description,SID | Format-Table Name,Desc,ID`
-
-#### Get Multiple Users' properties
-
-Returns multiple Users based on Team property.
-
-> `Get-ADComputer -Filter {Team -like "Toron*"} -Properties Name,Description,SID | Format-Table Name,Desc,ID` 
+# Get multiple user properties
+Get-ADComputer -Filter {Team -like [Value]*} -Properties Name,Description,SID | Format-Table Name,Desc,ID
+```
 
 ---
 
@@ -216,7 +169,9 @@ You can use this cmdlet to provision a computer account before the computer is a
 
 The Path parameter specifies the container or organizational unit (OU) for the new computer. When you do not specify the Path parameter, the cmdlet creates a computer account in the default container for computer objects in the domain.
 
-> `New-ADComputer -Name "Auston-SRV2" -SamAccountName "Auston-SRV2" -Path "OU=ApplicationServers,OU=ComputerAccounts,OU=Managed,DC=USERS02,DC=COM"`
+```powershell
+New-ADComputer -Name [Hostname] -SamAccountName [SamAccountName] -Path [OU Path]
+```
 
 ---
 
@@ -226,13 +181,17 @@ The Remove-ADComputer cmdlet removes an Active Directory computer.
 
 The Identity parameter specifies the Active Directory computer to remove. You can identify a computer by its distinguished name, GUID, security identifier (SID), or Security Accounts Manager (SAM) account name. You can also set the Identity parameter to a computer object variable, such as $<localComputerobject>, or you can pass a computer object through the pipeline to the Identity parameter. For example, you can use the Get-ADComputer cmdlet to retrieve a computer object and then pass the object through the pipeline to the Remove-ADComputer cmdlet.
 
-> `Remove-ADComputer -Identity "AustonMatthews-Laptop"`
+```powershell
+Remove-ADComputer -Identity [Hostname]
+```
 
 #### Remove Computer Recursively
 
 This command removes a computer and all leaf objects that are located underneath it in the directory. Note that only a few computer objects create child objects, such as servers running the Clustering service. This example can be useful for removing those objects and any child objects owned by and associated with them.
 
-> `Get-ADComputer -Identity "AustonMatthews-SRV4" | Remove-ADObject -Recursive`
+```powershell
+Get-ADComputer -Identity [Hostname] | Remove-ADObject -Recursive
+```
 
 ---
 
@@ -244,19 +203,16 @@ The Identity parameter specifies the Active Directory computer to modify. You ca
 
 The Instance parameter provides a way to update a computer by applying the changes made to a copy of the computer object. When you set the Instance parameter to a copy of an Active Directory computer object that has been modified, the Set-ADComputer cmdlet makes the same changes to the original computer object. To get a copy of the object to modify, use the Get-ADComputer object. When you specify the Instance parameter you should not pass the Identity parameter. For more information about the Instance parameter, see the Instance parameter description.
 
-#### Set property
+```powershell
+# Set Property
+Set-ADComputer -Identity [Hostname] -Location [Value]
 
-> `Set-ADComputer -Identity "austonMatthews-Laptop" -Location "ScotiaBankArena-Lockerroom"`
+# Batch set properties
+Get-ADComputer * -SearchBase [OU Path] | Set-ADComputer -Description [Value]
 
-#### Batch Set properties
-
-This command gets all the computers in the directory that are located in the OU=Players,OU=UserAccounts,DC=LEAFS,DC=COM organizational unit. This will change the description property of all computers in that OU to "Player Laptop".
-
-> `Get-ADComputer * -SearchBase 'OU=Players,OU=UserAccounts,DC=LEAFS,DC=COM' | Set-ADComputer -Description "Player Laptop"`
-
-#### Search and Set properties
-
-> `Get-ADComputer -Filter {Name -like "austonMatthews*"} | Set-ADComputer -Description "Auston Matthew's Laptop"`
+# Search and set properties
+Get-ADComputer -Filter {Name -like [Partial Name Value]*} | Set-ADComputer -Description [Value]
+```
 
 ---
 
@@ -272,7 +228,9 @@ To search for and retrieve more than one OU, use the Filter or LDAPFilter parame
 
 This cmdlet gets a default set of OU object properties. To get additional properties, use the Properties parameter. For more information about the how to determine the properties for computer objects, see the Properties parameter description.
 
-> `Get-ADOrganizationalUnit -Identity "OU=Toronto,DC=leafs,DC=com"`
+```powershell
+Get-ADOrganizationalUnit -Identity [OU Path]
+```
 
 ---
 
@@ -282,29 +240,16 @@ The New-ADOrganizationalUnit cmdlet creates an Active Directory organizational u
 
 You must set the Name parameter to create a new OU. If you do not specify the Path parameter, the cmdlet creates an OU under the default NC head for the domain.
 
-#### Create new OU
+```powershell
+# New OU
+New-ADOrganizationUnit -Name [Name Value] -Description [Value]
 
-> `New-ADOrganizationUnit -Name "Toronto" -Description "Toronto Branch"`
+# Create new OU with path
+New-ADOrganizationalUnit -Name [Name Value] -Path [OU Path]
 
-When no "Path" is defined, then the OU is created in root.
-
-#### Create new OU with path
-
-> `New-ADOrganizationalUnit -Name "Toronto" -Path "DC=leafs,DC=COM"`
-
----
-
-### Remove-ADOrganizationalUnit
-
-The Remove-ADOrganizationalUnit cmdlet removes an Active Directory organizational unit (OU).
-
-The Identity parameter specifies the organizational unit to remove. You can identify an organizational unit by its distinguished name or GUID. You can also set the parameter to an organizational unit object variable, such as $<localOrganizationUnitObject> or you can pass an object through the pipeline to the Identity parameter. For example, you can use the Get-ADOrganizationalUnit cmdlet to retrieve the object and then pass the object through the pipeline to the Remove-ADOrganizationalUnit cmdlet.
-
-If the object you want to remove has child objects, you must specify the Recursive parameter.
-
-If the ProtectedFromAccidentalDeletion property of the organizational unit object is set to true, the cmdlet returns a terminating error.
-
-> `Remove-ADOrganizationalUnit "OU=users,OU=Toronto,DC=leafs,DC=com"`
+# Remove OU
+Remove-ADOrganizationalUnit [OU Path]
+```
 
 ---
 
@@ -316,17 +261,13 @@ The Identity parameter specifies the Active Directory organizational unit to mod
 
 You can also set the Identity parameter to an object variable such as $<localADOrganizationalUnitObject>, or you can pass an object through the pipeline to the Identity parameter. For example, you can use the Get-ADOrganizationalUnit cmdlet to retrieve an organizational unit object and then pass the object through the pipeline to the Set-ADOrganizationalUnit cmdlet.
 
-> `Set-ADOrganizationalUnit -Identity "OU=UserAccounts,DC=leafs,DC=COM" -Description "This Organizational Unit holds all of the users accounts of leafs.COM"`
+```powershell
+# Set attribute
+Set-ADOrganizationalUnit -Identity [OU Path] -Description [Value]
 
-#### Set Managed By Attribute
-
-> `Set-ADOrganizationalUnit -Identity "OU=UserAccounts,DC=leafs,DC=COM" -ManagedBy "Toronto IT Team"`
-
-Make sure that the managed by value is set to an existing user or group. Otherwise the command will fail.
-
-#### Set Protected From Accidental Deletion Attribute
-
-> `Set-ADOrganizationalUnit -Identity "OU=UserAccounts,DC=leafs,DC=COM" -ProtectedFromAccidentalDeletion $true`
+# Set Accidental Deletion Attribute
+Set-ADOrganizationalUnit -Identity [OU Path] -ProtectedFromAccidentalDeletion $true
+```
 
 ---
 
@@ -338,7 +279,9 @@ The Disable-ADAccount cmdlet disables an Active Directory user, computer, or ser
 
 The Identity parameter specifies the Active Directory user, computer service account, or other service account that you want to disable. You can identify an account by its distinguished name, GUID, security identifier (SID), or Security Accounts Manager (SAM) account name. You can also set the Identity parameter to an object variable such as $<localADAccountObject>, or you can pass an account object through the pipeline to the Identity parameter. For example, you can use the Get-ADUser cmdlet to retrieve a user account object and then pass the object through the pipeline to the Disable-ADAccount cmdlet. Similarly, you can use Get-ADComputer and Search-ADAccount to retrieve account objects.
 
-> `Disable-ADAcount -Identity austonMatthews`
+```powershell
+Disable-ADAcount -Identity [SamAccountName]
+```
 
 ---
 
@@ -348,7 +291,9 @@ The Enable-ADAccount cmdlet enables an Active Directory user, computer, or servi
 
 The Identity parameter specifies the Active Directory user, computer, or service account that you want to enable. You can identify an account by its distinguished name, GUID, security identifier (SID) or Security Accounts Manager (SAM) account name. You can also set the Identity parameter to an object variable such as $<localADAccountObject>, or you can pass an account object through the pipeline to the Identity parameter. For example, you can use the Get-ADUser cmdlet to retrieve an account object and then pass the object through the pipeline to the Enable-ADAccount cmdlet. Similarly, you can use Get-ADComputer and Search-ADAccount to retrieve account objects.
 
-> `Enable-ADAccount -Identity austonMatthews`
+```powershell
+Enable-ADAccount -Identity [SamAccountName]
+```
 
 ---
 
@@ -366,13 +311,13 @@ The TargetPath parameter must be specified. This parameter identifies the new lo
 
 If you have ProtectedFromAccidentalDeletion enabled you cannot move objects. It must be disabled first.
 
-#### Move single User
+```powershell
+# Move single user
+Get-ADUser -Identity [SamAccountName] | Move-ADObject -TargetPath [OU Path]
 
-> `Get-ADUser "austonMatthews" | Move-ADObject -TargetPath "OU=Users,OU=Toronto,DC=leafs,DC=com"`
-
-#### Move multiple objects at once
-
-> `Get-ADUser -Filter {Name -like "aust*"} -SearchBase "OU=users,OU=Washington,DC=leafs,DC=com" | Move-ADObject -TargetPath "OU=Users,OU=Toronto,DC=leafs,DC=com"`
+# Move multiple objects
+Get-ADUser -Filter {Name -like [Partial Name Value]*} -SearchBase [OU Path] | Move-ADObject -TargetPath [OU Path]
+```
 
 ---
 
@@ -382,27 +327,19 @@ The Search-ADAccount cmdlet retrieves one or more user, computer, or service acc
 
 Some search parameters, such as AccountExpiring and AccountInactive use a default time that you can change by specifying the DateTime or TimeSpan parameter. The DateTime parameter specifies a distinct time. The TimeSpan parameter specifies a time range from the current time. For example, to search for all accounts that expire in 10 days, specify the AccountExpiring and TimeSpan parameter and set the value of TimeSpan to 10.00:00:00. To search for all accounts that expire before December 31, 2012, set the DateTime parameter to 12/31/2012.
 
-https://docs.microsoft.com/en-us/powershell/module/activedirectory/search-adaccount?view=windowsserver2019-ps#parameters
+```powershell
+# Search all disabled accounts
+Search-ADAccount -AccountDisabled | FT Name, ObjectClass -A
 
-#### Get all Disabled Accounts
+# Search only users with disabled accounts
+Search-ADAccount -AccountDisabled -UsersOnly | FT Name,ObjectClass -A
 
-> `Search-ADAccount -AccountDisabled | FT Name, ObjectClass -A`
+# Get all accounts with expired passwords
+Search-ADAccount -AccountExpired | FT Name,ObjectClass -A
 
-Gets all disabled accounts and returns them in a table with the name and Object Class (user, computer, etc).
-
-#### Get only users with disabled accounts
-
-> `Search-ADAccount -AccountDisabled -UsersOnly | FT Name,ObjectClass -A`
-
-Gets all disabled users and returns them in a table with the name and Object Class (user, computer, etc).
-
-#### Get all accounts that have expired passwords
-
-> `Search-ADAccount -AccountExpired | FT Name,ObjectClass -A`
-
-#### Get all accounts that are locked out.
-
-> `Search-ADAccount -LockedOut | FT Name,ObjectClass -A`
+# Get all locked out accounts
+Search-ADAccount -LockedOut | FT Name,ObjectClass -A
+```
 
 ---
 
@@ -414,16 +351,15 @@ The Identity parameter specifies the Active Directory account to modify.
 
 You can identify an account by its distinguished name, GUID, security identifier (SID) or security accounts manager (SAM) account name. You can also set the Identity parameter to an object variable such as $<localADAccountObject>, or you can pass an object through the pipeline to the Identity parameter. For example, you can use the Search-ADAccount cmdlet to retrieve an account object and then pass the object through the pipeline to the Set-ADAccountPassword cmdlet. Similarly, you can use Get-ADUser, Get-ADComputer, or Get-ADServiceAccount, for standalone MSAs, cmdlets to retrieve account objects that you can pass through the pipeline to this cmdlet.
 
-#### Set/Reset Password
+```powershell
+# Set/Reset Password
+Set-ADAccountPassword -Identity [SamAccountName] -Reset -NewPassword (ConvertTo-SecureString -AsPlainText [Password Value] -Force)
 
-> `Set-ADAccountPassword -Identity austonMatthews -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "Eye1theR0kitRich@rd" -Force)`
+# Set/Reset Password from CLI
+$NewPassword = (Read-Host -Prompt "Provide New Password" -AsSecureString)
+Set-ADAccountPassword -Identity austonMatthews -NewPassword $NewPassword -Reset
 
-#### Set/Reset Password from CLI
-
-This command prompts the user for a new password that is stored in a temporary variable named $NewPassword, then uses it to reset the password for the user account with the matching SamAccountName.
-
-> `$NewPassword = (Read-Host -Prompt "Provide New Password" -AsSecureString) `
-> `Set-ADAccountPassword -Identity austonMatthews -NewPassword $NewPassword -Reset`
+```
 
 ---
 
@@ -433,7 +369,9 @@ The Unlock-ADAccount cmdlet restores Active Directory Domain Services (AD DS) ac
 
 the Identity parameter specifies the Active Directory account to unlock. You can identify an account by its distinguished name, GUID, security identifier (SID) or Security Accounts Manager (SAM) account name. You can also set the Identity parameter to an account object variable such as $<localADAccountObject>, or you can pass an object through the pipeline to the Identity parameter. For example, you can use the Search-ADAccount cmdlet to get an account object and then pass the object through the pipeline to the Unlock-ADAccount cmdlet to unlock the account. Similarly, you can use Get-ADUser and Get-ADComputer to get objects to pass through the pipeline.
 
-> `Unlock-ADAccount SAMACCOUNTNAME`
+```powershell
+Unlock-ADAccount [SamAccountName]
+```
 
 ---
 
@@ -449,13 +387,14 @@ The ServiceAccount parameter specifies the service accounts to add. You can iden
 
 Note: Adding a service account is a different operation than installing the service account locally.
 
-#### Add single account
+```powershell
+# Add a computer account
+Add-ADComputerServiceAccount -Computer [Hostname] -ServiceAccount [Value]
 
-> `Add-ADComputerServiceAccount -Computer ComputerAcct1 -ServiceAccount SvcAcct1`
+# Add multiple accounts
+Add-ADComputerServiceAccount -Computer [Hostname] -ServiceAccount [Value],[Value]
 
-#### Add multiple accounts
-
-> `Add-ADComputerServiceAccount -Computer ComputerAcct1 -ServiceAccount SvcAcct1,SvcAcct2`
+```
 
 ---
 
@@ -467,7 +406,9 @@ The Identity parameter specifies the Active Directory managed service account to
 
 The AccountPassword parameter allows you to pass a secure string that contains the password of a standalone managed service account and is ignored for group managed service accounts. Alternatively, you can use PromptForPassword parameter to prompt for the standalone managed service account password. You must enter the password of a standalone managed service account if you want to install an account that you have provisioned. This is required when you are installing a standalone managed service account on a server located on a segmented network (site) with read-only domain controllers (for example, a perimeter network or DMZ). In this case you should create the standalone managed service account, link it with the appropriate computer account, and assign a well-known password that must be passed when installing the standalone managed service account on the server on the read-only domain controller site. If you pass both AccountPassword and PromptForPassword parameters, the AccountPassword parameter takes precedence.
 
-> `Install-ADServiceAccount -Identity 'SQL-HR-svc-01'`
+```powershell
+Install-ADServiceAccount -Identity [Value]
+```
 
 ---
 
@@ -477,7 +418,9 @@ The New-ADServiceAccount cmdlet creates a new Active Directory managed service a
 
 The Path parameter specifies the container or organizational unit (OU) for the new managed service account object. When you do not specify the Path parameter, the cmdlet creates an object in the default managed service accounts container for managed service account objects in the domain.
 
-> `New-ADServiceAccount -Name "Service01" -RestrictToSingleComputer`
+```powershell
+New-ADServiceAccount -Name [Name Value] -RestrictToSingleComputer
+```
 
 ---
 
@@ -489,18 +432,8 @@ The Identity parameter specifies the Active Directory managed service account to
 
 Note: Removing the service account is a different operation than uninstalling the service account locally.
 
-> `Remove-ADServiceAccount -Identity SQL-SRV1`
-
----
-
-### Test-ADServiceAccount
-
-The Test-ADServiceAccount cmdlet tests a managed service account (MSA) from a local computer.
-
-the Identity parameter specifies the Active Directory MSA account to test. You can identify a MSA by its distinguished name (DN), GUID, security identifier (SID), or Security Account Manager (SAM) account name. You can also set the parameter to a MSA object variable, such as $<localMSA> or pass a MSA object through the pipeline to the Identity parameter. For example, you can use the Get-ADServiceAccount to get a MSA object and then pass that object through the pipeline to the Test-ADServiceAccount cmdlet.
-
-> `Test-ADServiceAccount -Identity MSA1`
-
-This command tests the specified service account, MSA1, from the local computer. The test indicates whether the account is ready for use, which means it can be authenticated and that it can access the domain using its current credentials.
+```powershell
+Remove-ADServiceAccount -Identity [SamAccountName]
+```
 
 ---

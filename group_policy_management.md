@@ -2,30 +2,30 @@
 
 ## Table Of Contents
 
-1. [Group Policy Management](#group-policy-management)
-    1. [Table Of Contents](#table-of-contents)
-    2. [Groups](#groups)
-        1. [Add-ADGroupMember](#add-adgroupmember)
-        2. [Get-ADGroup](#get-adgroup)
-        3. [New-ADGroup](#new-adgroup)
-        4. [Remove-ADGroup](#remove-adgroup)
-        5. [Remove-ADGroupMember](#remove-adgroupmember)
-        6. [Set-ADGroup](#set-adgroup)
-    3. [Group Policy Objects](#group-policy-objects)
-        1. [Get-GPUInheritance](#get-gpuinheritance)
-        2. [Get-GPO](#get-gpo)
-        3. [New-GPLink](#new-gplink)
-        4. [New-GPO](#new-gpo)
-        5. [Remove-GPLink](#remove-gplink)
-        6. [Remove-GPO](#remove-gpo)
-        7. [Set-GPInheritance](#set-gpinheritance)
-        8. [Set-GPLink](#set-gplink)
-    4. [Group Policies](#group-policies)
-        1. [Policy Inheritance Order](#policy-inheritance-order)
-        2. [View Local Group Policy](#view-local-group-policy)
-    5. [Utils](#utils)
-        1. [gpresult](#gpresult)
-        2. [gpupdate](#gpupdate)
+- [Group Policy Management](#group-policy-management)
+  - [Table Of Contents](#table-of-contents)
+  - [Groups](#groups)
+    - [Add-ADGroupMember](#add-adgroupmember)
+    - [Get-ADGroup](#get-adgroup)
+    - [New-ADGroup](#new-adgroup)
+    - [Remove-ADGroup](#remove-adgroup)
+    - [Remove-ADGroupMember](#remove-adgroupmember)
+    - [Set-ADGroup](#set-adgroup)
+  - [Group Policy Objects](#group-policy-objects)
+    - [Get-GPUInheritance](#get-gpuinheritance)
+    - [Get-GPO](#get-gpo)
+    - [New-GPLink](#new-gplink)
+    - [New-GPO](#new-gpo)
+    - [Remove-GPLink](#remove-gplink)
+    - [Remove-GPO](#remove-gpo)
+    - [Set-GPInheritance](#set-gpinheritance)
+    - [Set-GPLink](#set-gplink)
+  - [Group Policies](#group-policies)
+    - [Policy Inheritance Order](#policy-inheritance-order)
+    - [View Local Group Policy](#view-local-group-policy)
+  - [Utils](#utils)
+    - [gpresult](#gpresult)
+    - [gpupdate](#gpupdate)
 
 ## Groups
 
@@ -37,7 +37,10 @@ The Identity parameter specifies the Active Directory group that receives the ne
 
 The Members parameter specifies the new members to add to a group. You can identify a new member by its distinguished name, GUID, security identifier, or SAM account name. You can also specify user, computer, and group object variables, such as $<localUserObject>. If you are specifying more than one new member, use a comma-separated list. You cannot pass user, computer, or group objects through the pipeline to this cmdlet. To add user, computer, or group objects to a group by using the pipeline, use the Add-ADPrincipalGroupMembership cmdlet.
 
-> `Add-ADGroupMember -Identity playersGroup -Members austonMatthews,morganReilly`
+```powershell
+# Add group member
+Add-ADGroupMember -Identity [Group SamAccountName] -Members [SamaccountName]
+```
 
 ---
 
@@ -51,21 +54,16 @@ To search for and retrieve more than one group, use the Filter or LDAPFilter par
 
 This cmdlet gets a default set of group object properties. To get additional properties use the Properties parameter. For more information about the how to determine the properties for group objects, see the Properties parameter description.
 
-#### Get single group
+```powershell
+# Get a sigle group
+Get-ADGroup -Identity [Group SamAccountName]
 
-> `Get-ADGroup -Identity playersGroup`
+# Filter for results
+Get-ADGroup -Filter 'GroupCategory -eq "Security" -and GroupScope -ne "DomainLocal"'
 
-This command gets the group with the SAM account name Administrators.
-
-#### Filter for results
-
-> `Get-ADGroup -Filter 'GroupCategory -eq "Security" -and GroupScope -ne "DomainLocal"'`
-
-This command gets all groups that have a GroupCategory of Security but do not have a GroupScope of DomainLocal.
-
-#### View specific properties from a group
-
-> `Get-ADGroup -Identity playersGroup -Properties DistinguishedName,Members | fl DN,Mems`
+# View specific properties from a group and put into a table
+Get-ADGroup -Identity [Group SamAccountName] -Properties [Value],[Value] | fl [Header Value],[Header Value]
+```
 
 ---
 
@@ -75,7 +73,9 @@ The New-ADGroup cmdlet creates an Active Directory group object. Many object pro
 
 The Name and GroupScope parameters specify the name and scope of the group and are required to create a new group. You can define the new group as a security or distribution group by setting the GroupType parameter. The Path parameter specifies the container or organizational unit (OU) for the group.
 
-> `New-ADGroup -Name "RODC Admins" -SamAccountName RODCAdmins -GroupCategory Security -GroupScope Global -DisplayName "RODC Administrators" -Path "CN=Users,DC=Fabrikam,DC=Com" -Description "Members of this group are RODC Administrators"`
+```powershell
+New-ADGroup -Name [Group Name Value] -SamAccountName [Group Sam Account Value] -GroupCategory [Group Category Value] -GroupScope Global -DisplayName [Display Name Value] -Path [OU Path] -Description [Description Value]
+```
 
 ---
 
@@ -87,7 +87,9 @@ The Identity parameter specifies the Active Directory group to remove. You can i
 
 If the ADGroup is being identified by its distinguished name, the Partition parameter is automatically determined.
 
-> `Remove-ADGroup -Identity SanjaysReports`
+```powershell
+Remove-ADGroup -Identity [Group SamAccountValue]
+```
 
 ---
 
@@ -99,7 +101,9 @@ The Identity parameter specifies the Active Directory group that contains the me
 
 The Members parameter specifies the users, computers and groups to remove from the group specified by the Identity parameter. You can identify a user, computer or group by its distinguished name, GUID, security identifier, or SAM account name. You can also specify user, computer, and group object variables, such as $<localUserObject>. If you are specifying more than one new member, use a comma-separated list. You cannot pass user, computer, or group objects through the pipeline to this cmdlet. To remove user, computer, or group objects from a group by using the pipeline, use the Remove-ADPrincipalGroupMembership cmdlet.
 
-> `Remove-ADGroupMember -Identity playersGroup -Members austonMatthews`
+```powershell
+Remove-ADGroupMember -Identity [Group SamAccountName] -Members [Member SamAccountName]
+```
 
 ---
 
@@ -111,7 +115,9 @@ The Identity parameter specifies the Active Directory group to modify. You can i
 
 The Instance parameter provides a way to update a group object by applying the changes made to a copy of the object. When you set the Instance parameter to a copy of an Active Directory group object that has been modified, the Set-ADGroup cmdlet makes the same changes to the original group object. To get a copy of the object to modify, use the Get-ADGroup cmdlet. The Identity parameter is not allowed when you use the Instance parameter. For more information about the Instance parameter, see the Instance parameter description.
 
-> `Set-ADGroup -Server localhost:60000 -Identity "CN=AccessControl,DC=AppNC" -Description "Access Group" -Passthru`
+```powershell
+Set-ADGroup -Server [Server Address] -Identity [Group SamAccountName] -Description [Description Value] -Passthru
+```
 
 ---
 
@@ -133,7 +139,9 @@ The InheritedGpoLinks property contains a list of the GPOs are applied to the OU
 - GPOs that are linked and enabled directly at the specified location.
 - If inheritance is not blocked for the specified location, inherited GPOs that are linked and enabled -- but not enforced -- at higher levels of the Group Policy hierarchy.
 
-> `Get-GPInheritance -Target "ou=MyOU,dc=contoso,dc=com"`
+```powershell
+Get-GPInheritance -Target [OU Path]
+```
 
 ---
 
@@ -143,7 +151,9 @@ The Get-GPO cmdlet gets one Group Policy Object (GPO) or all the GPOs in a domai
 
 This cmdlet returns one or more objects that represent the requested GPOs. By default, properties of the requested GPOs are printed to the display; however, you can also pipe the output of the Get-GPO cmdlet to other Group Policy cmdlets.
 
-> `Get-GPO -Name "Hockey Rules"`
+```powershell
+Get-GPO -Name [GPO Name Value]
+```
 
 ---
 
@@ -153,11 +163,13 @@ The New-GPLink cmdlet links a GPO to a site, domain, or organizational unit (OU)
 
 You can specify the GPO by either its display name or its GUID; or the GPO can be piped into the cmdlet. You specify the site, domain, or organizational unit (OU) to link to by its Lightweight Directory Access Protocol (LDAP) distinguished name. You can use other parameters to specify whether the link is enabled, whether the link is enforced, and the order in which it is applied at the site, domain, or OU.
 
-> `New-GPLink -Name GPO_NAME -Target "ou=MyOU,dc=contoso,dc=com"`
+```powershell
+# Create a GPO
+New-GPLink -Name GPO_NAME -Target [OU Path]
 
-#### Create GPO and Link it
-
-> `New-GPO -Name "MyGPO" | New-GPLink -Target "ou=MyOU,dc=contoso,dc=com" -LinkEnabled Yes`
+# Create a GPO and link it
+New-GPO -Name [GPO Name Value] | New-GPLink -Target [OU Path] -LinkEnabled Yes
+```
 
 ---
 
@@ -169,7 +181,9 @@ You can use this cmdlet to create a GPO that is based on a starter GPO by specif
 
 The cmdlet returns a GPO object, which represents the created GPO that you can pipe to other Group Policy cmdlets.
 
-> `New-GPO -Name NEW_GPO_NAME`
+```powershell
+New-GPO -Name [GPO Name Value]
+```
 
 ---
 
@@ -177,7 +191,9 @@ The cmdlet returns a GPO object, which represents the created GPO that you can p
 
 The Remove-GPLink cmdlet removes the link between a Group Policy Object (GPO) and a specified site, domain, or OU. This cmdlet does not delete the actual GPO or any other links between the specified GPO and other sites, domains, or OUs.
 
-> `Remove-GPLink -Name "MyGPO" -Target "OU=MyOU,dc=contoso,dc=com" `
+```powershell
+Remove-GPLink -Name [GPO Name Value] -Target [OU Path]
+```
 
 ---
 
@@ -185,7 +201,9 @@ The Remove-GPLink cmdlet removes the link between a Group Policy Object (GPO) an
 
 The Remove-GPO cmdlet removes the Group Policy Object (GPO) container and data from the directory service and the system volume folder (SysVol).
 
-> `Remove-GPO -Name GPO_TO_REMOVE`
+```powershell
+Remove-GPO -Name [GPO Name Value]
+```
 
 ---
 
@@ -197,14 +215,10 @@ GPOs are applied according to the Group Policy hierarchy in the following order:
 
 You use the Target parameter to specify the Lightweight Directory Access Protocol (LDAP) distinguished name of the domain or OU, and use the IsBlocked parameter to specify whether to block or unblock inheritance.
 
-#### Block inheritance in a domain
-> `Set-GPInheritance -Target "ou=MyOU,dc=contoso,dc=com" -IsBlocked Yes `
-
-#### Unblock inheritance in a domain
-> `Set-GPInheritance -Target "dc=northwest, dc=contoso, dc=com" -IsBlocked No`
-
-#### Unblock inheritance for a particular OU
-> `Set-GPInheritance -Target "ou=MyOU,dc=contoso,dc=com" -IsBlocked No`
+```powershell
+# Block/Unblock inheritance in a domain
+Set-GPInheritance -Target [OU Path] -IsBlocked [Bool]
+```
 
 ---
 
@@ -220,8 +234,10 @@ You can set the following properties:
 
 - Order. The order specifies the precedence that the settings of the GPO take over conflicting settings in other GPOs that are linked, and enabled, to the same site, domain, or OU.
 
-#### Enable the link between a GPO and OU
-> `Set-GPLink -Name TestGPO -Target "ou=MyOU,dc=contoso,dc=com" -LinkEnabled Yes`
+```powershell
+# Enable a link between a GPO and OU
+Set-GPLink -Name [GPO Link Name Value] -Target [OU Path] -LinkEnabled Yes
+```
 
 ---
 
@@ -238,7 +254,9 @@ Each new level overrides the previous, unless blocked or filtered, etc.
 
 ### View Local Group Policy
 
-> `gpedit.msc`
+```powershell
+gpedit.msc
+```
 
 ---
 
@@ -248,10 +266,19 @@ Each new level overrides the previous, unless blocked or filtered, etc.
 
 Displays the Resultant Set of Policy (RSoP) information for a remote user and computer. To use RSoP reporting for remotely targeted computers through the firewall, you must have firewall rules that enable inbound network traffic on the ports.
 
-> `gpresult /r`
+```powershell
+gpresult /r
+```
 
-#### For a remote user
-> `gpresult /s COMPUTERNAME /r`
+| Flag | Desc | 
+| --- | --- |
+| `/r` | Short for Resultant Set of Policy (RSOP). Shows the actual results. |
+| `/scope [user \| computer]` | Shows only the user or computer security policies. |
+| `/x` | Export results in XML format. |
+| `/h` | Export results in HTML format. |
+| `/s` | Specifies a remote computer. |
+| `/u` | Username for remote computer. |
+| `/p` | Password for remote computer. |
 
 ---
 
@@ -259,6 +286,21 @@ Displays the Resultant Set of Policy (RSoP) information for a remote user and co
 
 Updates Group Policy settings.
 
-> `gpupdate /force`
+```powershell
+gpupdate /force
+```
+
+__Asynchronous Mode__ is the default mode for security updates. This means the update does not have to have fully finished before the user logs in and begins work.
+
+__Synchronous Mode__ will not show the desktop until all of the updates are applied.
+
+| Flag | Desc |
+| --- | --- |
+| `/force` | Forces the re-access and re-application of ALL security settings. |
+| `/sync` | Switches the next foreground update to synchronous mode. |
+| `/boot` | Restart after applying. Needed for software install/updates and logon scripts. |
+| `/logoff` | Log out after update. Kind of useless because a normal logout triggers an update anyway. |
+| `/wait <seconds>` | Wait while the gpupdate finishes, then return cursor to normal use. |
+| `/target:[user \| computer]` | Will re-access and re-apply only the user or computer pooicy updates. Cuts down on processing time. |
 
 ---
