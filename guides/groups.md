@@ -102,8 +102,6 @@ Remove-ADObject -Identity "CN=Group,OU=Organizational Unit,DC=lucernpub,DC=com"
 ```powershell
 # Add
 Add-ADGroupMember -Identity "CN=Group,OU=Organizational Unit,DC=lucernpub,DC=com" -Members "User"
-
-
 ```
 
 ### Using Admin Center

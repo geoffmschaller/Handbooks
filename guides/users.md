@@ -5,6 +5,7 @@
 - [AD User Management](#ad-user-management)
   - [Table Of Contents](#table-of-contents)
   - [Create a User](#create-a-user)
+  - [Resetting Password](#resetting-password)
   - [Delete User](#delete-user)
   - [Modifying Users](#modifying-users)
   - [Moving A User](#moving-a-user)
@@ -48,6 +49,38 @@ New-ADUser -Name [Name] -GivenName [First name] -Surname [Last name] -SamAccount
    1. Specify the Full name, by either typing the full name or by filling the First name and Last name fields. 
    2. Specify the User logon name in the top field of the two available fields. This will create the userPrincipalName attribute (the combination of the two top fields) and the sAMAccountName attribute (the combination of the two bottom fields, referred to as the Pre-Windows 2000 user logon name in the user interface). 
 4. Click OK.
+
+---
+
+<div style="page-break-after: always;"></div>
+
+## Resetting Password
+
+### Using Users and Computers
+
+1. Click on the OU search icon on the top action bar (OU Scroll with magnifying glass).
+2. Use the "In" drop down to select the proper domain. It defaults to the last OU location you are in.
+3. Input the name of the user to reset.
+4. Click "Find Now".
+5. The search results will expand below.
+6. Right click the account in the search results.
+7. Select "Reset Password" from the pop up menu.
+8. Type in the new password.
+9. Confirm the new password.
+10. Check the box to force the user to reset their password at next login.
+11. Check the box to unlock the user's account. 
+12. Click okay.
+
+### Using Powershell
+
+```powershell
+# Set/Reset Password
+Set-ADAccountPassword -Identity [SamAccountName] -Reset -NewPassword (ConvertTo-SecureString -AsPlainText [Password Value] -Force)
+
+# Set/Reset Password from CLI
+$NewPassword = (Read-Host -Prompt "Provide New Password" -AsSecureString)
+Set-ADAccountPassword -Identity austonMatthews -NewPassword $NewPassword -Reset
+```
 
 ---
 

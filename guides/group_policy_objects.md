@@ -20,7 +20,7 @@
 --- 
 
 <div style="page-break-after: always;"></div>
-
+ 
 ## Creating A GPO
 
 ### Using Group Policy Manager
